@@ -1,0 +1,2 @@
+Put the saved weight of UNI 'pytorch_model.bin' in this folder
+
