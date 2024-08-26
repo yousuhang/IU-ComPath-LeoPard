@@ -1,0 +1,104 @@
+# CUDA_VISIBLE_DEVICES=0,1 python inference.py
+---
+
+seg_params:
+  # the level of pyramids that the segmentation performed on.
+  seg_level: -1
+  # thresholds
+  sthresh: 8
+  sthresh_up: 255
+  mthresh: 7
+  # number of closing process
+  close: 4
+  # whether use otsu thresholding'
+  use_otsu: False
+
+# Filter parameter for hole dropping
+filter_params:
+  # tissue threshold pixel number
+  a_t: 100
+  # hole threshold pixel number
+  a_h: 16
+  # max number of holes
+  max_n_holes: 8
+
+contour_params_low_level:
+  # the level of low level segmentation default 3
+  patch_level: 3
+  patch_size: 224 # default be the input size of extractor 224 for resnet50, UNI
+  step_size: 224 # default be the input size of extractor 224 for resnet50, UNI
+  # contour filter function name
+  contour_fn: four_pt
+  use_padding: True
+  top_left: null
+  bot_right: null # YAML's None
+
+
+
+
+contour_params :
+  # the level of pyramids that the patching performed on
+  patch_level: 0
+  patch_size: 2048
+  step_size: 1024
+  # contour filter function name
+  contour_fn: four_pt
+  use_padding: True
+  top_left: null
+  bot_right: null # YAML's None
+
+predictor_low_level_params:
+  # low level prediction
+  dropout: 0.25
+  n_classes: 2 # if 1, it is a regression; if 2 it is classification
+  embed_dim: 1024 # Could be different if a different extractor used
+  model_size: small # Choices are 'small' and 'big', do not change
+  model_type: clam_sb # Choices are 'mil_reg', 'mil_reg_att', 'mil_reg_topk_att', 'clam_sb'
+  # top_k feature extracted from the input feature
+  top_k: 10
+  # set if the gated attention used
+  gate: True
+  # path of the saved low level prediction model
+  cpkt_path: resources/extractor_n_weights/level3_classifier.pt
+  percentage: 0.10
+  # clam_sb_params
+  k_sample : 8
+  inst_loss : ce # choices=['svm', 'ce',] default is cross entropy
+  subtyping : False
+
+
+
+
+
+extraction_params :
+  extractor_name: 'uni_v1' # Choices are 'resnet50_trunc', 'uni_v1', 'conch_v1'
+  extractor_input_size: 224 # Input size for selected extractor
+  extractor_batch_size: 896
+  verbose: 0
+  num_workers: 0
+  pin_memory: False
+
+
+
+
+
+regression_params :
+  dropout: 0.25
+  n_classes: 1
+  embed_dim: 1024 # Could be different if a different extractor used
+  model_size: small # Choices are 'small' and 'big', do not change
+  model_type: mil_reg_topk_att # Choices are 'mil_reg', 'mil_reg_att', 'mil_reg_topk_att', 'mad_mil_reg'
+  # top_k feature extracted from the input feature
+  top_k: 30
+  # set if the gated attention used
+  gate: False
+  # set number of head when using mad_mil_reg
+  n_heads: 3
+  # path of the saved regression model
+  #  cpkt_path:
+  cpkt_folder: resources/extractor_n_weights/mil_reg_topk_att_30_simple_single
+
+
+
+
+
